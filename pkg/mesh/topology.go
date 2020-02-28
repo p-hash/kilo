@@ -19,10 +19,11 @@ import (
 	"net"
 	"sort"
 
-	"github.com/squat/kilo/pkg/encapsulation"
-	"github.com/squat/kilo/pkg/wireguard"
 	"github.com/vishvananda/netlink"
 	"golang.org/x/sys/unix"
+
+	"github.com/squat/kilo/pkg/encapsulation"
+	"github.com/squat/kilo/pkg/wireguard"
 )
 
 const kiloTableIndex = 1107
