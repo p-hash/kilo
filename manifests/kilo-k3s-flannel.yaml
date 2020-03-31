@@ -9,28 +9,28 @@ kind: ClusterRole
 metadata:
   name: kilo
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - nodes
-  verbs:
-  - list
-  - patch
-  - watch
-- apiGroups:
-  - kilo.squat.ai
-  resources:
-  - peers
-  verbs:
-  - list
-  - update
-  - watch
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - create
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - list
+      - patch
+      - watch
+  - apiGroups:
+      - kilo.squat.ai
+    resources:
+      - peers
+    verbs:
+      - list
+      - update
+      - watch
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - create
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -64,36 +64,37 @@ spec:
       serviceAccountName: kilo
       hostNetwork: true
       containers:
-      - name: kilo
-        image: squat/kilo
-        args:
-        - --kubeconfig=/etc/kubernetes/kubeconfig
-        - --hostname=$(NODE_NAME)
-        - --cni=false
-        - --compatibility=flannel
-        - --local=false
-        env:
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: kilo-dir
-          mountPath: /var/lib/kilo
-        - name: kubeconfig
-          mountPath: /etc/kubernetes/kubeconfig
-          readOnly: true
+        - name: kilo
+          image: squat/kilo
+          args:
+            - --kubeconfig=/etc/kubernetes/kubeconfig
+            - --hostname=$(NODE_NAME)
+            - --cni=false
+            - --compatibility=flannel
+            - --local=false
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: kilo-dir
+              mountPath: /var/lib/kilo
+            - name: kubeconfig
+              mountPath: /etc/kubernetes/kubeconfig
+              readOnly: true
       tolerations:
-      - effect: NoSchedule
-        operator: Exists
-      - effect: NoExecute
-        operator: Exists
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
       volumes:
-      - name: kilo-dir
-        hostPath:
-          path: /var/lib/kilo
-      - name: kubeconfig
-        hostPath: 
-          path: /etc/rancher/k3s/k3s.yaml
+        - name: kilo-dir
+          hostPath:
+            path: /var/lib/kilo
+        - name: kubeconfig
+          hostPath:
+            # This kubeconfig should be copied from master to worker nodes
+            path: /etc/rancher/k3s/k3s.yaml
